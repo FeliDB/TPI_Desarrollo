@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ZoneController } from './controller/zone.controller';
-import { ZoneService } from './service/zone.service';
-import { DeliveryController } from './controller/delivery.controller';
-import { DeliveryService } from './service/delivery.service';
+import { ZoneService } from './services/zone.service';
+import { DeliveryService } from './services/delivery.service';
+import { ZoneController } from './controllers/zone.controller';
+import { DeliveryController } from './controllers/delivery.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as entities from './entity';
+import { entities } from './entities';
 
 
 @Module({
@@ -15,15 +15,15 @@ import * as entities from './entity';
       type: 'postgres',
       database: 'deliverydb',
       username: 'felipe',
-      password: 'dni44900185',
+      password: '12345',
       synchronize: true,
-      entities: Object.values(entities),
-      port: 5432,
+      entities,
+      port: 5433,
       host: 'localhost',
     }),
-    TypeOrmModule.forFeature(Object.values(entities)) // entidades por cada modulo
+    TypeOrmModule.forFeature(entities) // entidades por cada modulo
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ZoneController, DeliveryController],
+  providers: [AppService, DeliveryService, ZoneService],
 })
 export class AppModule { }
