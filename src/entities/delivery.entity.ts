@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { locationEntity } from './location.entity';
 
 @Entity('delivery')
@@ -15,6 +15,7 @@ export class deliveryEntity extends BaseEntity {
     @Column()
     status: string;
 
-    @ManyToMany(() => locationEntity, (location) => location.delivery)
+    @OneToOne(() => locationEntity, {cascade: true})
+    @JoinColumn() // Esto indica que `Zone` tendrá la foreign key
     location: locationEntity;
 }
