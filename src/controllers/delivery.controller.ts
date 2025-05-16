@@ -2,11 +2,11 @@ import { Body, Controller, Post, Get, Put, Param, Patch, Delete } from '@nestjs/
 import { DeliveryService } from 'src/services/delivery.service';
 
 
-@Controller()
+@Controller("delivery")
 export class DeliveryController {
 
     constructor(private deliveryService: DeliveryService){}
-    @Post("delivery")
+    @Post()
     postDelivery(@Body() body: any){
         return this.deliveryService.postDelivery(body);
     }
