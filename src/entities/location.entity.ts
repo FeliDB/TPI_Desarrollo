@@ -9,10 +9,6 @@ export class locationEntity extends BaseEntity {
     lat: number;
     @Column('float')
     lng: number;
-
-    @OneToOne(() => locationEntity, { cascade: true })
-    @JoinColumn()
-    location: locationEntity;
 }
 
 export { deliveryEntity };
