@@ -17,6 +17,25 @@ export class DeliveryController {
         return this.deliveryService.putDeliveryLocation(id, body);
     }
 
+    @Put(":id/status")
+    putDeliveryStatus(@Param('id') id: number, @Body() body: any){
+        return this.deliveryService.putDeliveryStatus(id, body);
+    }
+
+    @Get("findByProximity")
+    getDeliveryByProximity(@Body() body: any){
+        return this.deliveryService.getDeliveryByProximity(body);
+    }
+
+    @Get("findByZone")
+    getDeliveryByZone(@Body() body: any){
+        return this.deliveryService.getDeliveryByZone(body);
+    }
+
+    @Post(':id/assignZone')
+    assignZone(@Param('id') id: number, @Body() body: any){
+        return this.deliveryService.assignZone(id, body);
+    }
 
 }
 
