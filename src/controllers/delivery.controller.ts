@@ -37,5 +37,10 @@ export class DeliveryController {
         return this.deliveryService.assignZone(id, body);
     }
 
+    @Get(":id/zones")
+    getDeliveryForIDByZone(@Param('id') id: number){
+        return this.deliveryService.getDeliveryForIDByZone(id);
+    }
+
 }
 

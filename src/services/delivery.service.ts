@@ -203,4 +203,19 @@ export class DeliveryService {
         }
     }
 
+    //Obtiene el delivery con la ID que le pasamos y me devuelve las zonas que tiene asociadas dicho delivery
+    async getDeliveryForIDByZone(id: number){
+        try{
+            if(id){
+                const delivery = await this.deliveryRepository.findOne({where: { idDelivery: id }});
+                return delivery
+            }else{
+                return 'No se ha encontrado el delivery'
+            }
+        
+        }catch(err){
+            throw new Error('Error al obtener la zona al delivery');
+        }
+    }
+
 }
