@@ -2,7 +2,7 @@ import { BaseEntity, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGen
 import { deliveryEntity } from './delivery.entity';
 import { zoneEntity } from './zone.entity';
 
-@Entity('location')
+@Entity('Location')
 export class locationEntity extends BaseEntity {
     @PrimaryGeneratedColumn()
     idLocation: number;
