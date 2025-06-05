@@ -1,5 +1,6 @@
 import { BaseEntity, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { deliveryEntity } from './delivery.entity';
+import { zoneEntity } from './zone.entity';
 
 @Entity('location')
 export class locationEntity extends BaseEntity {
@@ -9,6 +10,12 @@ export class locationEntity extends BaseEntity {
     lat: number;
     @Column('float')
     lng: number;
+
+    @OneToMany(() => deliveryEntity, (delivery) => delivery.status)
+    deliveries: deliveryEntity[];
+
+    @OneToMany(() => zoneEntity, (zone) => zone.location)
+    zones: zoneEntity[]
 }
 
 export { deliveryEntity };
