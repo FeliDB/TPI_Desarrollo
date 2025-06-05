@@ -1,23 +1,23 @@
-import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { locationEntity } from './location.entity';
-import { zoneEntity } from './zone.entity';
 import { statusEntity } from './status.entitiy';
+import { zoneEntity } from './zone.entity';
 
-@Entity('Delivery')
+@Entity('delivery')
 export class deliveryEntity extends BaseEntity {
     @PrimaryGeneratedColumn()
     idDelivery: number;
 
-    @Column()
+    @Column('float')
     radius: number;
-
-    @Column()
-    personId: number;
 
     @ManyToOne(() => statusEntity, (status) => status.deliveries)
     status: statusEntity;
 
     @ManyToOne(() => locationEntity, (location) => location.deliveries)
     location: locationEntity;
-    zone: any;
+
+    @ManyToOne(() => zoneEntity, (zone) => zone.deliveries)
+    zone: zoneEntity;
 }
+

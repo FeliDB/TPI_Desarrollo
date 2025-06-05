@@ -1,7 +1,7 @@
 import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { deliveryEntity } from './delivery.entity';
 
-@Entity('Status')
+@Entity('status')
 export class statusEntity extends BaseEntity {
     @PrimaryGeneratedColumn()
     idStatus: number;
