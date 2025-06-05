@@ -19,4 +19,5 @@ export class deliveryEntity extends BaseEntity {
 
     @ManyToOne(() => locationEntity, (location) => location.deliveries)
     location: locationEntity;
+    zone: any;
 }

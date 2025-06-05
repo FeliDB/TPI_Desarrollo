@@ -17,7 +17,7 @@ export class zoneEntity extends BaseEntity {
     @JoinColumn() // Esto indica que `Zone` tendrá la foreign key
     location: locationEntity;
 
-    @ManyToMany(() => deliveryEntity, (delivery) => delivery.zones)
+    @OneToMany(() => deliveryEntity, delivery => delivery.zone)
     deliveries: deliveryEntity[];
 
     
