@@ -16,209 +16,79 @@ export class DeliveryService {
         private locationRepository: Repository<locationEntity>, //
     ) { }
 
-//     //POST
-//     async postDelivery(data: Partial<deliveryEntity>) {
-//         try {
-//             // Verificar que location exista en los datos
-//             if (data.location) {
-//                 // Crear la entidad location
-//                 const location = new locationEntity();
-//                 location.lat = data.location.lat;
-//                 location.lng = data.location.lng;
 
-//                 // Guardar la ubicación en la base de datos
-//                 await this.locationRepository.save(location); // Asegúrate de inyectar la repository de location
+    async postDelivery(data: Partial<deliveryEntity>) {
+        try {
+            // Verificar que location exista en los datos
+            if (data.location) {
+                // Crear la entidad location
+                const location = new locationEntity();
+                location.lat = data.location.lat;
+                location.lng = data.location.lng;
 
-//                 // Asignar la ubicación al delivery
-//                 data.location = location; // La relación se mantiene correctamente
-//             }
+                // Guardar la ubicación en la base de datos
+                await this.locationRepository.save(location); // Asegúrate de inyectar la repository de location
 
-//             if (!data.status) {
-//                 data.status = 'available';
-//             }
+                // Asignar la ubicación a la zona
+                data.location = location; // La relación se mantiene correctamente
+            }
 
-//             // Crear el delivery
-//             const newDelivery = this.deliveryRepository.create(data); // Crear la entidad delivery
-//             await this.deliveryRepository.save(newDelivery); // Guardar en la base de datos
+            // Crear la zona
+            const newDelivery = this.deliveryRepository.create(data); // Crear la entidad zona
+            return await this.deliveryRepository.save(newDelivery);   // Guardar en la base de datos
+        } catch (error) {
+            console.error(error);
+            throw new Error('Error al guardar la zona');
+        }
+    }
 
-//             const response = {
-//                 idDelivery: newDelivery.idDelivery,
-//                 personId: newDelivery.personId,
-//                 location: {
-//                     lat: newDelivery.location.lat,
-//                     lng: newDelivery.location.lng,
-//                 },
-//                 radius: newDelivery.radius,
-//                 status: newDelivery.status
-//             };
+    async putDeliveryLocation(id: number, data: Partial<locationEntity>) {
+        try {
+            const delivery = await this.deliveryRepository.findOne({ where: { idDelivery: id }, relations: ['location'] });
 
-//             return response;
-//         } catch (error) {
-//             console.error(error);
-//             throw new Error('Error al guardar el delivery');
-//         }
-//     }
+            if (!delivery) {
+                throw new Error('Zona no encontrada');
+            }
 
-//     //--------------------------------------------------------------------------------------------------------------------------------------
+            // Actualizar solo los campos proporcionados en el cuerpo de la solicitud
+            if (data.lat !== undefined) {
+                delivery.location.lat = data.lat;
+            }
+            if (data.lng !== undefined) {
+                delivery.location.lng = data.lng;
+            }
 
-//     //PUT DELIVERY LOCATION
-//     async putDeliveryLocation(id: number, data: Partial<deliveryEntity>) {
-//         console.log("ERROR0")
-//         console.log('BODY RECIBIDO:', data);
-//         try {
-//             const delivery = await this.deliveryRepository.findOne({
-//                 where: { idDelivery: id },
-//                 relations: ['location'],
-//             });
+            // Guardar los cambios en la base de datos
+            await this.deliveryRepository.save(delivery);
 
-//             console.log("ERROR1")
-//             if (!delivery) {
-//                 console.log("ERROR2")
-//                 throw new Error('Delivery no encontrado');
-//             }
+            return delivery;
+        } catch (error) {
+            console.error(error);
+            throw new Error('Error al actualizar la ubicación de la zona');
+        }
+    }
 
-//             console.log("LOCATION ACTUAL:", delivery.location);
+    async putDeliveryStatus(id: number, data: Partial<deliveryEntity>) {
+        try {
+            const delivery = await this.deliveryRepository.findOne({ where: { idDelivery: id } });
 
+            if (!delivery) {
+                throw new Error('Zona no encontrada');
+            }
 
-//             if (data.location) {
-//                 if (data.location.lat !== undefined) {
-//                     console.log("ERROR3");
-//                     delivery.location.lat = data.location.lat;
-//                 }
-//                 if (data.location.lng !== undefined) {
-//                     console.log("ERROR4");
-//                     delivery.location.lng = data.location.lng;
-//                 }
-//             }
+            // Actualizar solo los campos proporcionados en el cuerpo de la solicitud
+            if (data.status !== undefined) {
+                delivery.status = data.status;
+            }
 
-//             console.log('Guardando locadvadabamkbdamoation:', delivery.location);
-//             await this.locationRepository.update(delivery.location.idLocation, {
-//                 lat: delivery.location.lat,
-//                 lng: delivery.location.lng,
-//             });
+            // Guardar los cambios en la base de datos
+            await this.deliveryRepository.save(delivery);
 
-//             console.log('Guardando location:', delivery.location);
-
-
-//             return delivery;
-
-//         } catch (error) {
-//             console.error(error);
-//             throw new Error('Error al actualizar la ubicación del delivery');
-//         }
-//     }
-
-
-// //---------------------------------------------------------------------------------------------------------------------------
-
-// //PUT DELIVERY STATUS
-
-//     async putDeliveryStatus(id: number, data: Partial<deliveryEntity>) {
-//         try {
-//             const delivery = await this.deliveryRepository.findOne({ where: { idDelivery: id } });
-//             if (!delivery) {
-//                 throw new Error('Delivery no encontrado');
-//             }
-
-//             delivery.status = data.status ?? delivery.status;
-
-//             await this.deliveryRepository.save(delivery);
-
-//             return delivery;
-//         } catch (error) {
-//             console.error(error);
-//             throw new Error('Error al actualizar el estado del delivery');
-//         }
-//     }
-
-
-// //----------------------------------------------------------------------------------------------------------------------------------
-
-// //FIND DELIVERY BY PROXIMITY
-
-//     async getDeliveryByProximity(data: Partial<deliveryEntity>) {
-//         try {
-//             const lat = data.location?.lat;
-//             const lng = data.location?.lng;
-//             const radius = data.radius;
-
-//             const deliveries = await this.deliveryRepository
-//                 .createQueryBuilder('delivery')
-//                 .innerJoinAndSelect('delivery.location', 'location')
-//                 .where('location.lat = :lat', { lat })
-//                 .andWhere('location.lng = :lng', { lng })
-//                 .andWhere('delivery.radius = :radius', { radius })
-//                 .getMany();
-            
-//             return deliveries;
-
-
-//         } catch(error) {
-//             console.error(error)
-//             throw new Error('Error al obtener el delivery por proximidad');
-//         }
-//     }
-
-
-// //----------------------------------------------------------------------------------------------------------------------------------
-
-// //FIND DELIVERY BY ZONE
-
-//     async getDeliveryByZone(data: Partial<zoneEntity>) {
-//         try {
-//             const idZone = data.idZone
-
-//             const deliveries = await this.deliveryRepository.find({
-//                 where: { zones: {idZone}},
-//                 relations: ['zone', 'location']
-//             })
-
-//             return deliveries
-
-//         } catch(error) {
-//             console.error(error)
-//             throw new Error('Error al obtener el delivery por zona');
-//         }
-//     }
-
-//     //----------------------------------------------------------------------------------------------------------------------------------
-
-// //ASSIGN ZONE
-
-//     async assignZone(id: number, data: Partial<deliveryEntity>) {
-//         try {
-//             const delivery = await this.deliveryRepository.findOne({ where: { idDelivery: id } });
-//             if (!delivery) {
-//                 throw new Error('Delivery no encontrado');
-//             }
-
-//             delivery.zones = data.zones ?? delivery.zones;
-
-//             await this.deliveryRepository.save(delivery);
-
-//             return delivery;
-//         } catch (error) {
-//             console.error(error);
-//             throw new Error('Error al asignar la zona al delivery');
-//         }
-//     }
-
-//     //Obtiene el delivery con la ID que le pasamos y me devuelve las zonas que tiene asociadas dicho delivery
-//     async getDeliveryForIDByZone(id: number) {
-//         try {
-//             const delivery = await this.deliveryRepository.findOne({
-//                 where: { idDelivery: id },
-//                 relations: ['zones'],
-//             });
-
-//             if (!delivery) {
-//                 throw new Error('Delivery no encontrado');
-//             }
-//             return delivery.zones;
-//         } catch (error) {
-//             console.error(error);
-//             throw new Error('Error al obtener las zonas del delivery');
-//         }
-//     }
+            return delivery;
+        } catch (error) {
+            console.error(error);
+            throw new Error('Error al actualizar el estado de la zona');
+        }
+    }
 
 }

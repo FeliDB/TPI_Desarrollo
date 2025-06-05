@@ -8,7 +8,10 @@ export class locationEntity extends BaseEntity {
     idLocation: number;
 
     @Column()
-    nameLocation: string;
+    lat: number;
+
+    @Column()
+    lng: number;
 
     @OneToMany(() => deliveryEntity, (delivery) => delivery.location)
     deliveries: deliveryEntity[];
