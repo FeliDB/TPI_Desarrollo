@@ -9,7 +9,7 @@ export class zoneEntity {
   @Column()
   name: string;
 
-  @Column('float')
+  @Column()
   radius: number;
 
   @ManyToOne(() => locationEntity)
