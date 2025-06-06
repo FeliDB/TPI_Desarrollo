@@ -16,7 +16,6 @@ export class DeliveryService {
         private locationRepository: Repository<locationEntity>, //
     ) { }
 
-
     async postDelivery(data: Partial<deliveryEntity>) {
         try {
             // Verificar que location exista en los datos
@@ -38,57 +37,24 @@ export class DeliveryService {
             return await this.deliveryRepository.save(newDelivery);   // Guardar en la base de datos
         } catch (error) {
             console.error(error);
-            throw new Error('Error al guardar la zona');
         }
     }
 
-    async putDeliveryLocation(id: number, data: Partial<locationEntity>) {
-        try {
-            const delivery = await this.deliveryRepository.findOne({ where: { idDelivery: id }, relations: ['location'] });
-
-            if (!delivery) {
-                throw new Error('Zona no encontrada');
-            }
-
-            // Actualizar solo los campos proporcionados en el cuerpo de la solicitud
-            if (data.lat !== undefined) {
-                delivery.location.lat = data.lat;
-            }
-            if (data.lng !== undefined) {
-                delivery.location.lng = data.lng;
-            }
-
-            // Guardar los cambios en la base de datos
-            await this.deliveryRepository.save(delivery);
-
-            return delivery;
-        } catch (error) {
-            console.error(error);
-            throw new Error('Error al actualizar la ubicación de la zona');
+    async putDeliveryStatus(id: number, status: string) {
+        const delivery = await this.deliveryRepository.findOne({ where: { idDelivery: id } });
+        if (!delivery) {
+            throw new Error('Delivery no encontrado');
         }
+        delivery.status = status;
+        return await this.deliveryRepository.save(delivery);
     }
 
-    async putDeliveryStatus(id: number, data: Partial<deliveryEntity>) {
-        try {
-            const delivery = await this.deliveryRepository.findOne({ where: { idDelivery: id } });
-
-            if (!delivery) {
-                throw new Error('Zona no encontrada');
-            }
-
-            // Actualizar solo los campos proporcionados en el cuerpo de la solicitud
-            if (data.status !== undefined) {
-                delivery.status = data.status;
-            }
-
-            // Guardar los cambios en la base de datos
-            await this.deliveryRepository.save(delivery);
-
-            return delivery;
-        } catch (error) {
-            console.error(error);
-            throw new Error('Error al actualizar el estado de la zona');
+    async putDeliveryLocation(id: number, location: locationEntity) {
+        const delivery = await this.deliveryRepository.findOne({ where: { idDelivery: id } });
+        if (!delivery) {
+            throw new Error('Delivery no encontrado');
         }
+        delivery.location = location;
+        return await this.deliveryRepository.save(delivery);
     }
-
 }

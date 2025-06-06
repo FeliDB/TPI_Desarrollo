@@ -6,29 +6,34 @@ import { identity } from 'rxjs';
 export class ZoneController {
 
     constructor(private zoneService: ZoneService){}
-    // @Post()
-    // postZonaEntrega(@Body() body: any){
-    //     return this.zoneService.postZonaEntrega(body);
-    // }
+    @Post()
+    postZone(@Body() body: any){
+        return this.zoneService.postZone(body);
+    }
 
-    // @Get()
-    // getZonaEntrega(){
-    //     return this.zoneService.getZonaEntrega();
-    // }
+    @Get()
+    getZone(){
+        return this.zoneService.getZone();
+    }
 
-    // @Put(':id')
-    // putZonaEntrega(@Param('id') id: number, @Body() body: any){
-    //     return this.zoneService.putZonaEntrega(id, body);
-    // }
+    @Get(":id")
+    getZoneId(@Param("id") id: number){
+        return this.zoneService.getZoneId(id);
+    }
 
-    // @Patch(':id')
-    // patchZonaEntrega(@Param('id') id: number, @Body() body: any){
-    //     return this.zoneService.patchZonaEntrega(id, body);
-    // }
+    @Put(":id")
+    putZone(@Param("id") id: number, @Body() body: any){
+        return this.zoneService.putZone(id, body);
+    }
 
-    // @Delete(':id')
-    // deleteZonaEntrega(@Param('id') id: number){
-    //     return this.zoneService.deleteZonaEntrega(id);
-    // }
+    @Patch(":id")
+    patchZone(@Param("id") id: number, @Body() body: any){
+        return this.zoneService.patchZone(id, body);
+    }
+
+    @Delete(":id")
+    deleteZone(@Param("id") id: number){
+        return this.zoneService.deleteZone(id);
+    }
 
 }

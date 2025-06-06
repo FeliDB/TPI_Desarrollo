@@ -1,23 +1,26 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { locationEntity } from './location.entity';
-import { statusEntity } from './status.entitiy';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { zoneEntity } from './zone.entity';
+import { locationEntity } from './location.entity';
 
 @Entity('delivery')
-export class deliveryEntity extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    idDelivery: number;
+export class deliveryEntity {
+  @PrimaryGeneratedColumn()
+  idDelivery: number;
 
-    @Column('float')
-    radius: number;
+  @Column()
+  personId: number;
 
-    @ManyToOne(() => statusEntity, (status) => status.deliveries)
-    status: statusEntity;
+  @Column('float')
+  radius: number;
 
-    @ManyToOne(() => locationEntity, (location) => location.deliveries)
-    location: locationEntity;
+  @Column({default: "avaliable"})
+  status: string;
 
-    @ManyToOne(() => zoneEntity, (zone) => zone.deliveries)
-    zone: zoneEntity;
+  @ManyToOne(() => zoneEntity)
+  @JoinColumn({ name: 'zone' })
+  zone: zoneEntity;
+
+  @ManyToOne(() => locationEntity)
+  @JoinColumn({ name: 'location' })
+  location: locationEntity;
 }
-

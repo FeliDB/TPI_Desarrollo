@@ -1,4 +1,5 @@
 import { Body, Controller, Post, Get, Put, Param, Patch, Delete } from '@nestjs/common';
+import { stat } from 'fs';
 import { DeliveryService } from 'src/services/delivery.service';
 
 
@@ -12,35 +13,14 @@ export class DeliveryController {
     }
 
     @Put(":id/location")
-    putDeliveryLocation(@Param('id') id: number, @Body() body: any){
-        console.log('PUT /delivery/:id/location called with id:', id, 'body:', body);
+    putDeliveryLocation(@Param("id") id: number, @Body() body: any){
         return this.deliveryService.putDeliveryLocation(id, body);
     }
 
     @Put(":id/status")
-    putDeliveryStatus(@Param('id') id: number, @Body() body: any){
+    putDeliveryStatus(@Param("id") id: number, @Body() body: any){
         return this.deliveryService.putDeliveryStatus(id, body);
     }
-
-    // @Get("findByProximity")
-    // getDeliveryByProximity(@Body() body: any){
-    //     return this.deliveryService.getDeliveryByProximity(body);
-    // }
-
-    // @Get("findByZone")
-    // getDeliveryByZone(@Body() body: any){
-    //     return this.deliveryService.getDeliveryByZone(body);
-    // }
-
-    // @Post(':id/assignZone')
-    // assignZone(@Param('id') id: number, @Body() body: any){
-    //     return this.deliveryService.assignZone(id, body);
-    // }
-
-    // @Get(":id/zones")
-    // getDeliveryForIDByZone(@Param('id') id: number){
-    //     return this.deliveryService.getDeliveryForIDByZone(id);
-    // }
 
 }
 
