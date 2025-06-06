@@ -23,9 +23,34 @@ export class DeliveryController {
         return this.deliveryService.putDeliveryStatus(id, body);
     }
 
-    @Get()
+    @Get("findByProximity")
     findByProximity(@Body() body: any){
         return this.deliveryService.findByProximity(body);
+    }
+
+    @Post(":id/assignZone")
+    assignZone(@Param("id") id: number, @Body() body: any){
+        return this.deliveryService.assignZone(id, body);
+    }
+
+    @Get("findByZone")
+    findByZone(@Body() body: any){
+        return this.deliveryService.findByZone(body);
+    }
+
+    @Get(":id/zones")
+    getZones(@Param("id") id: number){
+        return this.deliveryService.getZones(id);
+    }
+
+    @Delete(":id/zone/:zoneId")
+    deleteDeliveryZone(@Param("id") id: number, @Param("zoneId") zoneId: number){
+        return this.deliveryService.deleteDeliveryZone(id, zoneId);
+    }
+
+    @Delete(":id")
+    deleteDelivery(@Param("id") id: number){
+        return this.deliveryService.deleteDelivery(id);
     }
 
 }

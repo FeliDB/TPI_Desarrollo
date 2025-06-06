@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, JoinTable, ManyToMany } from 'typeorm';
 import { zoneEntity } from './zone.entity';
 import { locationEntity } from './location.entity';
 
@@ -16,9 +16,9 @@ export class deliveryEntity {
   @Column({default: "avaliable"})
   status: string;
 
-  @ManyToOne(() => zoneEntity, {nullable: true})
-  @JoinColumn({ name: 'zone' })
-  zone: zoneEntity;
+  @ManyToMany(() => zoneEntity, {nullable: true})
+  @JoinTable()
+  zones: zoneEntity[]
 
   @ManyToOne(() => locationEntity, )
   @JoinColumn({ name: 'location' })

@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { locationEntity } from './location.entity';
+import { deliveryEntity } from './delivery.entity';
 
 @Entity('zone')
 export class zoneEntity {
@@ -15,4 +16,8 @@ export class zoneEntity {
   @ManyToOne(() => locationEntity)
   @JoinColumn({ name: 'location' })
   location: locationEntity;
+
+  @ManyToMany(() => deliveryEntity, {nullable: true})
+  @JoinTable()
+  deliveries: deliveryEntity[]
 }

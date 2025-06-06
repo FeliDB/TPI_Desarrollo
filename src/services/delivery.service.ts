@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DeliveryController } from 'src/controllers/delivery.controller';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -40,6 +40,26 @@ export class DeliveryService {
         return savedDelivery;
     }
 
+    async putDeliveryStatus(id: number, body: any) {
+        const { status } = body;
+
+        // Buscar el delivery existente
+        const delivery = await this.deliveryRepository.findOne({
+            where: { idDelivery: id },
+        });
+
+        if (!delivery) {
+            throw new Error(`Delivery with id ${id} not found`);
+        }
+
+        // Actualizar el status
+        delivery.status = status;
+
+        // Guardar el delivery actualizado
+        const updatedDelivery = await this.deliveryRepository.save(delivery);
+        return updatedDelivery;
+    }
+
     async putDeliveryLocation(id: number, body: any) {
         const { location } = body;
 
@@ -62,8 +82,109 @@ export class DeliveryService {
         return updatedDelivery;
     }
 
-    async findByProximity(body: any) {
-        return 0;
+    async findByProximity(body: any): Promise<deliveryEntity[]> {
+        const { location, radius } = body;
+        const { lat, lng } = location;
+
+        // Buscar todos los deliveries con sus ubicaciones
+        const allDeliveries = await this.deliveryRepository.find({
+            relations: ['location'],
+        });
+
+        // Filtrar los deliveries que cumplen la condición
+        const matchingDeliveries = allDeliveries.filter((delivery) => {
+            const dLat = delivery.location.lat - lat;
+            const dLng = delivery.location.lng - lng;
+            const distance = Math.sqrt(dLat * dLat + dLng * dLng); // Distancia en grados
+
+            return distance <= radius && delivery.radius <= radius;
+        });
+
+        return matchingDeliveries;
+    }
+    
+
+    async assignZone(id: number, body: any): Promise<deliveryEntity> {
+        const { zoneIds } = body;
+
+        // Buscar el delivery por id
+        const delivery = await this.deliveryRepository.findOne({
+            where: { idDelivery: id },
+            relations: ['zones'], // asegúrate que este es el nombre de la relación
+        });
+
+        if (!delivery) {
+            throw new Error(`Delivery with id ${id} not found`);
+        }
+
+        // Buscar zonas por id
+        const zones = await this.zoneRepository.findByIds(zoneIds || []);
+
+        // Asignar las zonas al delivery
+        delivery.zones = zones;
+
+        // Guardar y retornar
+        const updatedDelivery = await this.deliveryRepository.save(delivery);
+        return updatedDelivery;
     }
 
+    async findByZone(body: any) {
+        const { zoneId } = body;
+
+        // Verificar si la zona existe (opcional pero recomendable)
+        const zone = await this.zoneRepository.findOne({ where: { idZone: zoneId } });
+        if (!zone) {
+            throw new Error(`Zone with id ${zoneId} not found`);
+        }
+
+        // Buscar todos los deliveries con esa zona
+        const deliveries = await this.deliveryRepository.find({
+            where: { zones: { idZone: zoneId } }, // si es ManyToMany
+            relations: ['location', 'zones'],
+        });
+
+        return deliveries;
+    }
+
+    async getZones(id: number): Promise<zoneEntity[]> {
+        // Buscar el delivery con sus zonas relacionadas
+        const delivery = await this.deliveryRepository.findOne({
+            where: { idDelivery: id },
+            relations: ['zones'], // asegurate de que este nombre coincida con tu entidad
+        });
+
+        if (!delivery) {
+            throw new Error(`Delivery with id ${id} not found`);
+        }
+
+        return delivery.zones;
+    }
+
+    async deleteDeliveryZone(idDelivery: number, zoneId: number): Promise<{ message: string }> {
+        await this.deliveryRepository
+            .createQueryBuilder()
+            .relation('zones')
+            .of(idDelivery)
+            .remove(zoneId);
+
+        return {
+            message: "Zone removed from delivery"
+        };
+    }
+
+    async deleteDelivery(id: number): Promise<{ message: string }> {
+        const delivery = await this.deliveryRepository.findOne({
+            where: { idDelivery: id },
+        });
+
+        if (!delivery) {
+            throw new NotFoundException(`Delivery with id ${id} not found`);
+        }
+
+        await this.deliveryRepository.remove(delivery);
+
+        return {
+            message: "Delivery deleted"
+        };
+    }
 }

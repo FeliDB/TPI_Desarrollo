@@ -45,24 +45,39 @@ export class ZoneService {
     }
 
 
-    async putZone(id: number, body: any){
-        const { name, location, radius } = body;
+  async putZone(id: number, body: any) {
+    const { name, location, radius } = body;
 
-        // Crear y guardar la ubicación
-        const newLocation = new locationEntity();
-        newLocation.lat = location.lat;
-        newLocation.lng = location.lng;
-        const savedLocation = await this.locationRepository.save(newLocation);
+    // Buscar la zona existente
+    const existingZone = await this.zoneRepository.findOne({
+      where: { idZone: id },
+      relations: ['location'],
+    });
 
-        // Crear y guardar la zona
-        const newZone = new zoneEntity();
-        newZone.name = name;
-        newZone.radius = radius;
-        newZone.location = savedLocation;
-
-        const savedZone = await this.zoneRepository.save(newZone);
-        return savedZone;
+    if (!existingZone) {
+      throw new Error(`Zone with id ${id} not found`);
     }
+
+    // Actualizar ubicación existente o crear nueva si no hay
+    if (existingZone.location) {
+      existingZone.location.lat = location.lat;
+      existingZone.location.lng = location.lng;
+      await this.locationRepository.save(existingZone.location);
+    } else {
+      const newLocation = new locationEntity();
+      newLocation.lat = location.lat;
+      newLocation.lng = location.lng;
+      const savedLocation = await this.locationRepository.save(newLocation);
+      existingZone.location = savedLocation;
+    }
+
+    // Actualizar campos de zona
+    existingZone.name = name;
+    existingZone.radius = radius;
+
+    const updatedZone = await this.zoneRepository.save(existingZone);
+    return updatedZone;
+  }
 
 async patchZone(id: number, body: any) {
   // Buscar la zona existente
