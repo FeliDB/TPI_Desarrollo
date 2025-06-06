@@ -16,11 +16,11 @@ export class deliveryEntity {
   @Column({default: "avaliable"})
   status: string;
 
-  @ManyToOne(() => zoneEntity)
+  @ManyToOne(() => zoneEntity, {nullable: true})
   @JoinColumn({ name: 'zone' })
   zone: zoneEntity;
 
-  @ManyToOne(() => locationEntity)
+  @ManyToOne(() => locationEntity, )
   @JoinColumn({ name: 'location' })
   location: locationEntity;
 }
