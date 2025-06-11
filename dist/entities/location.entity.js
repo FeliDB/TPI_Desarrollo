@@ -9,17 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deliveryEntity = exports.locationEntity = void 0;
+exports.locationEntity = void 0;
 const typeorm_1 = require("typeorm");
-const delivery_entity_1 = require("./delivery.entity");
-Object.defineProperty(exports, "deliveryEntity", { enumerable: true, get: function () { return delivery_entity_1.deliveryEntity; } });
-const zone_entity_1 = require("./zone.entity");
-let locationEntity = class locationEntity extends typeorm_1.BaseEntity {
+let locationEntity = class locationEntity {
     idLocation;
     lat;
     lng;
-    deliveries;
-    zones;
 };
 exports.locationEntity = locationEntity;
 __decorate([
@@ -34,15 +29,7 @@ __decorate([
     (0, typeorm_1.Column)('float'),
     __metadata("design:type", Number)
 ], locationEntity.prototype, "lng", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => delivery_entity_1.deliveryEntity, (delivery) => delivery.status),
-    __metadata("design:type", Array)
-], locationEntity.prototype, "deliveries", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => zone_entity_1.zoneEntity, (zone) => zone.location),
-    __metadata("design:type", Array)
-], locationEntity.prototype, "zones", void 0);
 exports.locationEntity = locationEntity = __decorate([
-    (0, typeorm_1.Entity)('Location')
+    (0, typeorm_1.Entity)('location')
 ], locationEntity);
 //# sourceMappingURL=location.entity.js.map

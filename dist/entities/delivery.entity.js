@@ -11,15 +11,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deliveryEntity = void 0;
 const typeorm_1 = require("typeorm");
+const zone_entity_1 = require("./zone.entity");
 const location_entity_1 = require("./location.entity");
-const status_entitiy_1 = require("./status.entitiy");
-let deliveryEntity = class deliveryEntity extends typeorm_1.BaseEntity {
+let deliveryEntity = class deliveryEntity {
     idDelivery;
-    radius;
     personId;
+    radius;
     status;
+    zones;
     location;
-    zone;
 };
 exports.deliveryEntity = deliveryEntity;
 __decorate([
@@ -29,20 +29,26 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
-], deliveryEntity.prototype, "radius", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
 ], deliveryEntity.prototype, "personId", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => status_entitiy_1.statusEntity, (status) => status.deliveries),
-    __metadata("design:type", status_entitiy_1.statusEntity)
+    (0, typeorm_1.Column)('float'),
+    __metadata("design:type", Number)
+], deliveryEntity.prototype, "radius", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: "avaliable" }),
+    __metadata("design:type", String)
 ], deliveryEntity.prototype, "status", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => location_entity_1.locationEntity, (location) => location.deliveries),
+    (0, typeorm_1.ManyToMany)(() => zone_entity_1.zoneEntity, { nullable: true }),
+    (0, typeorm_1.JoinTable)(),
+    __metadata("design:type", Array)
+], deliveryEntity.prototype, "zones", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => location_entity_1.locationEntity),
+    (0, typeorm_1.JoinColumn)({ name: 'location' }),
     __metadata("design:type", location_entity_1.locationEntity)
 ], deliveryEntity.prototype, "location", void 0);
 exports.deliveryEntity = deliveryEntity = __decorate([
-    (0, typeorm_1.Entity)('Delivery')
+    (0, typeorm_1.Entity)('delivery')
 ], deliveryEntity);
 //# sourceMappingURL=delivery.entity.js.map

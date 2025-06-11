@@ -1,34 +1,40 @@
 import { Body, Controller, Post, Get, Put, Param, Patch, Delete } from '@nestjs/common';
 import { ZoneService } from '../services/zone.service';
 import { identity } from 'rxjs';
+import { zoneEntity } from 'src/entities/zone.entity';
 
 @Controller('zone')
 export class ZoneController {
 
     constructor(private zoneService: ZoneService){}
-    // @Post()
-    // postZonaEntrega(@Body() body: any){
-    //     return this.zoneService.postZonaEntrega(body);
-    // }
 
-    // @Get()
-    // getZonaEntrega(){
-    //     return this.zoneService.getZonaEntrega();
-    // }
+    @Post()
+    postZone(@Body() body: any){
+        return this.zoneService.postZone(body);
+    }
 
-    // @Put(':id')
-    // putZonaEntrega(@Param('id') id: number, @Body() body: any){
-    //     return this.zoneService.putZonaEntrega(id, body);
-    // }
+    @Get()
+    getZones(){
+        return this.zoneService.getZones();
+    }
 
-    // @Patch(':id')
-    // patchZonaEntrega(@Param('id') id: number, @Body() body: any){
-    //     return this.zoneService.patchZonaEntrega(id, body);
-    // }
+    @Get(":id")
+    getZone(@Param("id") id: number){
+        return this.zoneService.getZone(id);
+    }
 
-    // @Delete(':id')
-    // deleteZonaEntrega(@Param('id') id: number){
-    //     return this.zoneService.deleteZonaEntrega(id);
-    // }
+    @Put(":id")
+    putZone(@Param("id") id: number, @Body() body: any){
+        return this.zoneService.putZone(id, body);
+    }
 
+    @Patch(":id")
+    patchZone(@Param("id") id: number, @Body() body: any){
+        return this.zoneService.patchZone(id, body);
+    }
+
+    @Delete(":id")
+    deleteZone(@Param("id") id: number){
+        return this.zoneService.deleteZone(id);
+    }
 }

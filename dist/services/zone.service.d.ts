@@ -5,11 +5,12 @@ export declare class ZoneService {
     private zoneRepository;
     private locationRepository;
     constructor(zoneRepository: Repository<zoneEntity>, locationRepository: Repository<locationEntity>);
-    postZonaEntrega(data: Partial<zoneEntity>): Promise<zoneEntity>;
-    getZonaEntrega(): Promise<zoneEntity[]>;
-    putZonaEntrega(id: number, data: Partial<zoneEntity>): Promise<zoneEntity>;
-    patchZonaEntrega(id: number, data: Partial<zoneEntity>): Promise<zoneEntity>;
-    deleteZonaEntrega(id: number): Promise<{
+    postZone(body: any): Promise<zoneEntity>;
+    getZones(): Promise<zoneEntity[]>;
+    getZone(id: number): Promise<zoneEntity | null>;
+    putZone(id: number, body: any): Promise<zoneEntity>;
+    patchZone(id: number, body: any): Promise<zoneEntity>;
+    deleteZone(id: number): Promise<{
         message: string;
     }>;
 }

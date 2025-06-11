@@ -4,130 +4,122 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { zoneEntity } from '../entities/zone.entity';
 import { locationEntity } from 'src/entities/location.entity';
+import { Request } from '@nestjs/common'
+import { Response } from '@nestjs/common';
 
 
 @Injectable()
 export class ZoneService {
     constructor(
-    @InjectRepository(zoneEntity)
-    private zoneRepository: Repository<zoneEntity>,
+        @InjectRepository(zoneEntity)
+        private zoneRepository: Repository<zoneEntity>,
+        @InjectRepository(locationEntity)
+        private locationRepository: Repository<locationEntity>
+    ) { }
 
-    @InjectRepository(locationEntity)
-    private locationRepository: Repository<locationEntity>, //
-  ) {}
+    async postZone(body: any) {
+        const { name, location, radius } = body;
 
+        // Crear y guardar la ubicación
+        const newLocation = new locationEntity();
+        newLocation.lat = location.lat;
+        newLocation.lng = location.lng;
+        const savedLocation = await this.locationRepository.save(newLocation);
 
-// //POST
-// async postZonaEntrega(data: Partial<zoneEntity>) {
-//   try {
-//     // Verificar que location exista en los datos
-//     if (data.location) {
-//       // Crear la entidad location
-//       const location = new locationEntity();
-//       location.lat = data.location.lat;
-//       location.lng = data.location.lng;
+        // Crear y guardar la zona
+        const newZone = new zoneEntity();
+        newZone.name = name;
+        newZone.radius = radius;
+        newZone.location = savedLocation;
 
-//       // Guardar la ubicación en la base de datos
-//       await this.locationRepository.save(location); // Asegúrate de inyectar la repository de location
+        const savedZone = await this.zoneRepository.save(newZone);
+        return savedZone;
+}
 
-//       // Asignar la ubicación a la zona
-//       data.location = location; // La relación se mantiene correctamente
-//     }
+    async getZones(){
+        return this.zoneRepository.find({relations: ['location']});
+    }
 
-//     // Crear la zona
-//     const newZone = this.zoneRepository.create(data); // Crear la entidad zona
-//     return await this.zoneRepository.save(newZone);   // Guardar en la base de datos
-//   } catch (error) {
-//     console.error(error);
-//     throw new Error('Error al guardar la zona');
-//   }
-// }
-
-
-// //GET
-// async getZonaEntrega() {
-//   try {
-//     return await this.zoneRepository.find({ relations: ['location'] });
-//   } catch (error) {
-//     console.error(error);
-//     throw new Error('Error al obtener las zonas');
-//   }
-// }
+    async getZone(id: number){
+        return this.zoneRepository.findOne({where: {idZone: id}, relations: ['location']});
+    }
 
 
-// //PUT
-// async putZonaEntrega(id: number, data:Partial<zoneEntity>) {
-//     const zone = await this.zoneRepository.findOne({
-//          where: { idZone: id },
-//          relations: ['location'],
-        
-//     });
+  async putZone(id: number, body: any) {
+    const { name, location, radius } = body;
 
-//     if (!zone){
-//         throw new Error('Zona no encontrada')
-//     }
+    // Buscar la zona existente
+    const existingZone = await this.zoneRepository.findOne({
+      where: { idZone: id },
+      relations: ['location'],
+    });
 
-//     zone.name = data.name ?? zone.name;
-//     zone.radius = data.radius ?? zone.radius;
+    if (!existingZone) {
+      throw new Error(`Zone with id ${id} not found`);
+    }
 
-//     // Si incluye location, actualizá la entidad relacionada
-//     if (data.location) {
-//         if (zone.location) {
-//         zone.location.lat = data.location.lat ?? zone.location.lat;
-//         zone.location.lng = data.location.lng ?? zone.location.lng;
-//         await this.locationRepository.save(zone.location);
-//         } else {
-//         const newLoc = this.locationRepository.create(data.location);
-//         zone.location = await this.locationRepository.save(newLoc);
-//         }
-//     }
+    // Actualizar ubicación existente o crear nueva si no hay
+    if (existingZone.location) {
+      existingZone.location.lat = location.lat;
+      existingZone.location.lng = location.lng;
+      await this.locationRepository.save(existingZone.location);
+    } else {
+      const newLocation = new locationEntity();
+      newLocation.lat = location.lat;
+      newLocation.lng = location.lng;
+      const savedLocation = await this.locationRepository.save(newLocation);
+      existingZone.location = savedLocation;
+    }
 
-//     return await this.zoneRepository.save(zone);
+    // Actualizar campos de zona
+    existingZone.name = name;
+    existingZone.radius = radius;
 
-// }
+    const updatedZone = await this.zoneRepository.save(existingZone);
+    return updatedZone;
+  }
 
-// //PATCH
+async patchZone(id: number, body: any) {
+  // Buscar la zona existente
+  const zone = await this.zoneRepository.findOne({
+    where: { idZone: id },
+    relations: ['location'],
+  })
 
-// async patchZonaEntrega(id: number, data: Partial<zoneEntity>){
-//     try {
-//         const zone = await this.zoneRepository.findOne({ where: { idZone: id } });
-//         if (!zone) {
-//             throw new Error('Zona no encontrada');
-//         }
+  if (!zone) {
+    throw new Error(`Zone with id ${id} not found`);
+  }
 
-//         // Actualizar solo los campos proporcionados en el cuerpo de la solicitud
-//         if (data.name !== undefined) {
-//             zone.name = data.name;
-//         }
-//         if (data.radius !== undefined) {
-//             zone.radius = data.radius;
-//         }
+  // Actualizar solo los campos presentes en el body
+  if (body.name !== undefined) {
+    zone.name = body.name;
+  }
+  if (body.radius !== undefined) {
+    zone.radius = body.radius;
+  }
 
-//         // Guardar los cambios en la base de datos
-//         await this.zoneRepository.save(zone);
+  // Guardar la zona actualizada
+  const updatedZone = await this.zoneRepository.save(zone);
+  return updatedZone;
+}
 
-//         return zone;
-//     } catch (error) {
-//         console.error(error);
-//         throw new Error('Error al actualizar la zona');
-//     }
+async deleteZone(id: number) {
+  // Buscar la zona existente
+  const zone = await this.zoneRepository.findOne({
+    where: { idZone: id },
+    relations: ['location'],
+  })
 
-// }
+  if (!zone) {
+    throw new Error(`Zone with id ${id} not found`);
+  }
 
-// //DELETE
-// async deleteZonaEntrega(id: number) {
-//     try {
-//         const zone = await this.zoneRepository.findOne({ where: { idZone: id } });
-//         if (!zone) {
-//             throw new Error('Zona no encontrada');
-//         }
-
-//         await this.zoneRepository.remove(zone);
-//         return { message: 'Zona eliminada correctamente' };
-//     } catch (error) {
-//         console.error(error);
-//         throw new Error('Error al eliminar la zona');
-//     }
-// }
+  // Eliminar la zona
+  await this.zoneRepository.remove(zone);
+  
+  return {
+    "message": "Zone deleted"
+  }
+}
 
 }

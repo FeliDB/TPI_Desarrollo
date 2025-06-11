@@ -25,88 +25,80 @@ let ZoneService = class ZoneService {
         this.zoneRepository = zoneRepository;
         this.locationRepository = locationRepository;
     }
-    async postZonaEntrega(data) {
-        try {
-            if (data.location) {
-                const location = new location_entity_1.locationEntity();
-                location.lat = data.location.lat;
-                location.lng = data.location.lng;
-                await this.locationRepository.save(location);
-                data.location = location;
-            }
-            const newZone = this.zoneRepository.create(data);
-            return await this.zoneRepository.save(newZone);
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Error al guardar la zona');
-        }
+    async postZone(body) {
+        const { name, location, radius } = body;
+        const newLocation = new location_entity_1.locationEntity();
+        newLocation.lat = location.lat;
+        newLocation.lng = location.lng;
+        const savedLocation = await this.locationRepository.save(newLocation);
+        const newZone = new zone_entity_1.zoneEntity();
+        newZone.name = name;
+        newZone.radius = radius;
+        newZone.location = savedLocation;
+        const savedZone = await this.zoneRepository.save(newZone);
+        return savedZone;
     }
-    async getZonaEntrega() {
-        try {
-            return await this.zoneRepository.find({ relations: ['location'] });
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Error al obtener las zonas');
-        }
+    async getZones() {
+        return this.zoneRepository.find({ relations: ['location'] });
     }
-    async putZonaEntrega(id, data) {
+    async getZone(id) {
+        return this.zoneRepository.findOne({ where: { idZone: id }, relations: ['location'] });
+    }
+    async putZone(id, body) {
+        const { name, location, radius } = body;
+        const existingZone = await this.zoneRepository.findOne({
+            where: { idZone: id },
+            relations: ['location'],
+        });
+        if (!existingZone) {
+            throw new Error(`Zone with id ${id} not found`);
+        }
+        if (existingZone.location) {
+            existingZone.location.lat = location.lat;
+            existingZone.location.lng = location.lng;
+            await this.locationRepository.save(existingZone.location);
+        }
+        else {
+            const newLocation = new location_entity_1.locationEntity();
+            newLocation.lat = location.lat;
+            newLocation.lng = location.lng;
+            const savedLocation = await this.locationRepository.save(newLocation);
+            existingZone.location = savedLocation;
+        }
+        existingZone.name = name;
+        existingZone.radius = radius;
+        const updatedZone = await this.zoneRepository.save(existingZone);
+        return updatedZone;
+    }
+    async patchZone(id, body) {
         const zone = await this.zoneRepository.findOne({
             where: { idZone: id },
             relations: ['location'],
         });
         if (!zone) {
-            throw new Error('Zona no encontrada');
+            throw new Error(`Zone with id ${id} not found`);
         }
-        zone.name = data.name ?? zone.name;
-        zone.radius = data.radius ?? zone.radius;
-        if (data.location) {
-            if (zone.location) {
-                zone.location.lat = data.location.lat ?? zone.location.lat;
-                zone.location.lng = data.location.lng ?? zone.location.lng;
-                await this.locationRepository.save(zone.location);
-            }
-            else {
-                const newLoc = this.locationRepository.create(data.location);
-                zone.location = await this.locationRepository.save(newLoc);
-            }
+        if (body.name !== undefined) {
+            zone.name = body.name;
         }
-        return await this.zoneRepository.save(zone);
+        if (body.radius !== undefined) {
+            zone.radius = body.radius;
+        }
+        const updatedZone = await this.zoneRepository.save(zone);
+        return updatedZone;
     }
-    async patchZonaEntrega(id, data) {
-        try {
-            const zone = await this.zoneRepository.findOne({ where: { idZone: id } });
-            if (!zone) {
-                throw new Error('Zona no encontrada');
-            }
-            if (data.name !== undefined) {
-                zone.name = data.name;
-            }
-            if (data.radius !== undefined) {
-                zone.radius = data.radius;
-            }
-            await this.zoneRepository.save(zone);
-            return zone;
+    async deleteZone(id) {
+        const zone = await this.zoneRepository.findOne({
+            where: { idZone: id },
+            relations: ['location'],
+        });
+        if (!zone) {
+            throw new Error(`Zone with id ${id} not found`);
         }
-        catch (error) {
-            console.error(error);
-            throw new Error('Error al actualizar la zona');
-        }
-    }
-    async deleteZonaEntrega(id) {
-        try {
-            const zone = await this.zoneRepository.findOne({ where: { idZone: id } });
-            if (!zone) {
-                throw new Error('Zona no encontrada');
-            }
-            await this.zoneRepository.remove(zone);
-            return { message: 'Zona eliminada correctamente' };
-        }
-        catch (error) {
-            console.error(error);
-            throw new Error('Error al eliminar la zona');
-        }
+        await this.zoneRepository.remove(zone);
+        return {
+            "message": "Zone deleted"
+        };
     }
 };
 exports.ZoneService = ZoneService;

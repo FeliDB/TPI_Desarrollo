@@ -12,11 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.zoneEntity = void 0;
 const typeorm_1 = require("typeorm");
 const location_entity_1 = require("./location.entity");
-const location_entity_2 = require("./location.entity");
-let zoneEntity = class zoneEntity extends typeorm_1.BaseEntity {
+const delivery_entity_1 = require("./delivery.entity");
+let zoneEntity = class zoneEntity {
     idZone;
-    radius;
     name;
+    radius;
     location;
     deliveries;
 };
@@ -27,22 +27,23 @@ __decorate([
 ], zoneEntity.prototype, "idZone", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], zoneEntity.prototype, "radius", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], zoneEntity.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => location_entity_1.locationEntity),
-    (0, typeorm_1.JoinColumn)(),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], zoneEntity.prototype, "radius", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => location_entity_1.locationEntity),
+    (0, typeorm_1.JoinColumn)({ name: 'location' }),
     __metadata("design:type", location_entity_1.locationEntity)
 ], zoneEntity.prototype, "location", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => location_entity_2.deliveryEntity, delivery => delivery.zone),
+    (0, typeorm_1.ManyToMany)(() => delivery_entity_1.deliveryEntity, { nullable: true }),
+    (0, typeorm_1.JoinTable)(),
     __metadata("design:type", Array)
 ], zoneEntity.prototype, "deliveries", void 0);
 exports.zoneEntity = zoneEntity = __decorate([
-    (0, typeorm_1.Entity)('Zone')
+    (0, typeorm_1.Entity)('zone')
 ], zoneEntity);
 //# sourceMappingURL=zone.entity.js.map

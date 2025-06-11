@@ -20,20 +20,23 @@ let ZoneController = class ZoneController {
     constructor(zoneService) {
         this.zoneService = zoneService;
     }
-    postZonaEntrega(body) {
-        return this.zoneService.postZonaEntrega(body);
+    postZone(body) {
+        return this.zoneService.postZone(body);
     }
-    getZonaEntrega() {
-        return this.zoneService.getZonaEntrega();
+    getZones() {
+        return this.zoneService.getZones();
     }
-    putZonaEntrega(id, body) {
-        return this.zoneService.putZonaEntrega(id, body);
+    getZone(id) {
+        return this.zoneService.getZone(id);
     }
-    patchZonaEntrega(id, body) {
-        return this.zoneService.patchZonaEntrega(id, body);
+    putZone(id, body) {
+        return this.zoneService.putZone(id, body);
     }
-    deleteZonaEntrega(id) {
-        return this.zoneService.deleteZonaEntrega(id);
+    patchZone(id, body) {
+        return this.zoneService.patchZone(id, body);
+    }
+    deleteZone(id) {
+        return this.zoneService.deleteZone(id);
     }
 };
 exports.ZoneController = ZoneController;
@@ -43,36 +46,43 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], ZoneController.prototype, "postZonaEntrega", null);
+], ZoneController.prototype, "postZone", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], ZoneController.prototype, "getZonaEntrega", null);
+], ZoneController.prototype, "getZones", null);
 __decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
-    __metadata("design:returntype", void 0)
-], ZoneController.prototype, "putZonaEntrega", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
-    __metadata("design:returntype", void 0)
-], ZoneController.prototype, "patchZonaEntrega", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)(":id"),
+    __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
-], ZoneController.prototype, "deleteZonaEntrega", null);
+], ZoneController.prototype, "getZone", null);
+__decorate([
+    (0, common_1.Put)(":id"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], ZoneController.prototype, "putZone", null);
+__decorate([
+    (0, common_1.Patch)(":id"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], ZoneController.prototype, "patchZone", null);
+__decorate([
+    (0, common_1.Delete)(":id"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], ZoneController.prototype, "deleteZone", null);
 exports.ZoneController = ZoneController = __decorate([
     (0, common_1.Controller)('zone'),
     __metadata("design:paramtypes", [zone_service_1.ZoneService])

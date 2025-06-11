@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DeliveryController } from 'src/controllers/delivery.controller';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -8,217 +8,183 @@ import { zoneEntity } from 'src/entities/zone.entity';
 
 @Injectable()
 export class DeliveryService {
-    constructor(
+
+    constructor (
         @InjectRepository(deliveryEntity)
         private deliveryRepository: Repository<deliveryEntity>,
-
         @InjectRepository(locationEntity)
-        private locationRepository: Repository<locationEntity>, //
-    ) { }
+        private locationRepository: Repository<locationEntity>,
+        @InjectRepository(zoneEntity)
+        private zoneRepository: Repository<zoneEntity>
+    ) {}
 
-//     //POST
-//     async postDelivery(data: Partial<deliveryEntity>) {
-//         try {
-//             // Verificar que location exista en los datos
-//             if (data.location) {
-//                 // Crear la entidad location
-//                 const location = new locationEntity();
-//                 location.lat = data.location.lat;
-//                 location.lng = data.location.lng;
+    async postDelivery(body: any) {
+        const { personId, radius, location } = body;
 
-//                 // Guardar la ubicación en la base de datos
-//                 await this.locationRepository.save(location); // Asegúrate de inyectar la repository de location
+        // Crear y guardar la ubicación
+        const newLocation = new locationEntity();
+        newLocation.lat = location.lat;
+        newLocation.lng = location.lng;
+        const savedLocation = await this.locationRepository.save(newLocation);
 
-//                 // Asignar la ubicación al delivery
-//                 data.location = location; // La relación se mantiene correctamente
-//             }
+        // Crear y guardar el delivery
+        const newDelivery = new deliveryEntity();
+        newDelivery.personId = personId;
+        newDelivery.radius = radius;
+        newDelivery.location = savedLocation;
+        // No se asigna zone ni status (status se asigna por defecto desde la entidad)
+        // zone se deja como null automáticamente porque es opcional
 
-//             if (!data.status) {
-//                 data.status = 'available';
-//             }
+        const savedDelivery = await this.deliveryRepository.save(newDelivery);
 
-//             // Crear el delivery
-//             const newDelivery = this.deliveryRepository.create(data); // Crear la entidad delivery
-//             await this.deliveryRepository.save(newDelivery); // Guardar en la base de datos
+        return savedDelivery;
+    }
 
-//             const response = {
-//                 idDelivery: newDelivery.idDelivery,
-//                 personId: newDelivery.personId,
-//                 location: {
-//                     lat: newDelivery.location.lat,
-//                     lng: newDelivery.location.lng,
-//                 },
-//                 radius: newDelivery.radius,
-//                 status: newDelivery.status
-//             };
+    async putDeliveryStatus(id: number, body: any) {
+        const { status } = body;
 
-//             return response;
-//         } catch (error) {
-//             console.error(error);
-//             throw new Error('Error al guardar el delivery');
-//         }
-//     }
+        // Buscar el delivery existente
+        const delivery = await this.deliveryRepository.findOne({
+            where: { idDelivery: id },
+        });
 
-//     //--------------------------------------------------------------------------------------------------------------------------------------
+        if (!delivery) {
+            throw new Error(`Delivery with id ${id} not found`);
+        }
 
-//     //PUT DELIVERY LOCATION
-//     async putDeliveryLocation(id: number, data: Partial<deliveryEntity>) {
-//         console.log("ERROR0")
-//         console.log('BODY RECIBIDO:', data);
-//         try {
-//             const delivery = await this.deliveryRepository.findOne({
-//                 where: { idDelivery: id },
-//                 relations: ['location'],
-//             });
+        // Actualizar el status
+        delivery.status = status;
 
-//             console.log("ERROR1")
-//             if (!delivery) {
-//                 console.log("ERROR2")
-//                 throw new Error('Delivery no encontrado');
-//             }
+        // Guardar el delivery actualizado
+        const updatedDelivery = await this.deliveryRepository.save(delivery);
+        return updatedDelivery;
+    }
 
-//             console.log("LOCATION ACTUAL:", delivery.location);
+    async putDeliveryLocation(id: number, body: any) {
+        const { location } = body;
 
+        // Buscar el delivery existente
+        const delivery = await this.deliveryRepository.findOne({
+            where: { idDelivery: id },
+            relations: ['location'],
+        });
 
-//             if (data.location) {
-//                 if (data.location.lat !== undefined) {
-//                     console.log("ERROR3");
-//                     delivery.location.lat = data.location.lat;
-//                 }
-//                 if (data.location.lng !== undefined) {
-//                     console.log("ERROR4");
-//                     delivery.location.lng = data.location.lng;
-//                 }
-//             }
+        if (!delivery) {
+            throw new Error(`Delivery with id ${id} not found`);
+        }
 
-//             console.log('Guardando locadvadabamkbdamoation:', delivery.location);
-//             await this.locationRepository.update(delivery.location.idLocation, {
-//                 lat: delivery.location.lat,
-//                 lng: delivery.location.lng,
-//             });
+        // Actualizar la ubicación
+        delivery.location.lat = location.lat;
+        delivery.location.lng = location.lng;
 
-//             console.log('Guardando location:', delivery.location);
+        // Guardar el delivery actualizado
+        const updatedDelivery = await this.deliveryRepository.save(delivery);
+        return updatedDelivery;
+    }
 
+    async findByProximity(body: any): Promise<deliveryEntity[]> {
+        const { location, radius } = body;
+        const { lat, lng } = location;
 
-//             return delivery;
+        // Buscar todos los deliveries con sus ubicaciones
+        const allDeliveries = await this.deliveryRepository.find({
+            relations: ['location'],
+        });
 
-//         } catch (error) {
-//             console.error(error);
-//             throw new Error('Error al actualizar la ubicación del delivery');
-//         }
-//     }
+        // Filtrar los deliveries que cumplen la condición
+        const matchingDeliveries = allDeliveries.filter((delivery) => {
+            const dLat = delivery.location.lat - lat;
+            const dLng = delivery.location.lng - lng;
+            const distance = Math.sqrt(dLat * dLat + dLng * dLng); // Distancia en grados
 
+            return distance <= radius && delivery.radius <= radius;
+        });
 
-// //---------------------------------------------------------------------------------------------------------------------------
+        return matchingDeliveries;
+    }
+    
 
-// //PUT DELIVERY STATUS
+    async assignZone(id: number, body: any): Promise<deliveryEntity> {
+        const { zoneIds } = body;
 
-//     async putDeliveryStatus(id: number, data: Partial<deliveryEntity>) {
-//         try {
-//             const delivery = await this.deliveryRepository.findOne({ where: { idDelivery: id } });
-//             if (!delivery) {
-//                 throw new Error('Delivery no encontrado');
-//             }
+        // Buscar el delivery por id
+        const delivery = await this.deliveryRepository.findOne({
+            where: { idDelivery: id },
+            relations: ['zones'], // asegúrate que este es el nombre de la relación
+        });
 
-//             delivery.status = data.status ?? delivery.status;
+        if (!delivery) {
+            throw new Error(`Delivery with id ${id} not found`);
+        }
 
-//             await this.deliveryRepository.save(delivery);
+        // Buscar zonas por id
+        const zones = await this.zoneRepository.findByIds(zoneIds || []);
 
-//             return delivery;
-//         } catch (error) {
-//             console.error(error);
-//             throw new Error('Error al actualizar el estado del delivery');
-//         }
-//     }
+        // Asignar las zonas al delivery
+        delivery.zones = zones;
 
+        // Guardar y retornar
+        const updatedDelivery = await this.deliveryRepository.save(delivery);
+        return updatedDelivery;
+    }
 
-// //----------------------------------------------------------------------------------------------------------------------------------
+    async findByZone(body: any) {
+        const { zoneId } = body;
 
-// //FIND DELIVERY BY PROXIMITY
+        // Verificar si la zona existe (opcional pero recomendable)
+        const zone = await this.zoneRepository.findOne({ where: { idZone: zoneId } });
+        if (!zone) {
+            throw new Error(`Zone with id ${zoneId} not found`);
+        }
 
-//     async getDeliveryByProximity(data: Partial<deliveryEntity>) {
-//         try {
-//             const lat = data.location?.lat;
-//             const lng = data.location?.lng;
-//             const radius = data.radius;
+        // Buscar todos los deliveries con esa zona
+        const deliveries = await this.deliveryRepository.find({
+            where: { zones: { idZone: zoneId } }, // si es ManyToMany
+            relations: ['location', 'zones'],
+        });
 
-//             const deliveries = await this.deliveryRepository
-//                 .createQueryBuilder('delivery')
-//                 .innerJoinAndSelect('delivery.location', 'location')
-//                 .where('location.lat = :lat', { lat })
-//                 .andWhere('location.lng = :lng', { lng })
-//                 .andWhere('delivery.radius = :radius', { radius })
-//                 .getMany();
-            
-//             return deliveries;
+        return deliveries;
+    }
 
+    async getZones(id: number): Promise<zoneEntity[]> {
+        // Buscar el delivery con sus zonas relacionadas
+        const delivery = await this.deliveryRepository.findOne({
+            where: { idDelivery: id },
+            relations: ['zones'], // asegurate de que este nombre coincida con tu entidad
+        });
 
-//         } catch(error) {
-//             console.error(error)
-//             throw new Error('Error al obtener el delivery por proximidad');
-//         }
-//     }
+        if (!delivery) {
+            throw new Error(`Delivery with id ${id} not found`);
+        }
 
+        return delivery.zones;
+    }
 
-// //----------------------------------------------------------------------------------------------------------------------------------
+    async deleteDeliveryZone(idDelivery: number, zoneId: number): Promise<{ message: string }> {
+        await this.deliveryRepository
+            .createQueryBuilder()
+            .relation('zones')
+            .of(idDelivery)
+            .remove(zoneId);
 
-// //FIND DELIVERY BY ZONE
+        return {
+            message: "Zone removed from delivery"
+        };
+    }
 
-//     async getDeliveryByZone(data: Partial<zoneEntity>) {
-//         try {
-//             const idZone = data.idZone
+    async deleteDelivery(id: number): Promise<{ message: string }> {
+        const delivery = await this.deliveryRepository.findOne({
+            where: { idDelivery: id },
+        });
 
-//             const deliveries = await this.deliveryRepository.find({
-//                 where: { zones: {idZone}},
-//                 relations: ['zone', 'location']
-//             })
+        if (!delivery) {
+            throw new NotFoundException(`Delivery with id ${id} not found`);
+        }
 
-//             return deliveries
+        await this.deliveryRepository.remove(delivery);
 
-//         } catch(error) {
-//             console.error(error)
-//             throw new Error('Error al obtener el delivery por zona');
-//         }
-//     }
-
-//     //----------------------------------------------------------------------------------------------------------------------------------
-
-// //ASSIGN ZONE
-
-//     async assignZone(id: number, data: Partial<deliveryEntity>) {
-//         try {
-//             const delivery = await this.deliveryRepository.findOne({ where: { idDelivery: id } });
-//             if (!delivery) {
-//                 throw new Error('Delivery no encontrado');
-//             }
-
-//             delivery.zones = data.zones ?? delivery.zones;
-
-//             await this.deliveryRepository.save(delivery);
-
-//             return delivery;
-//         } catch (error) {
-//             console.error(error);
-//             throw new Error('Error al asignar la zona al delivery');
-//         }
-//     }
-
-//     //Obtiene el delivery con la ID que le pasamos y me devuelve las zonas que tiene asociadas dicho delivery
-//     async getDeliveryForIDByZone(id: number) {
-//         try {
-//             const delivery = await this.deliveryRepository.findOne({
-//                 where: { idDelivery: id },
-//                 relations: ['zones'],
-//             });
-
-//             if (!delivery) {
-//                 throw new Error('Delivery no encontrado');
-//             }
-//             return delivery.zones;
-//         } catch (error) {
-//             console.error(error);
-//             throw new Error('Error al obtener las zonas del delivery');
-//         }
-//     }
-
+        return {
+            message: "Delivery deleted"
+        };
+    }
 }

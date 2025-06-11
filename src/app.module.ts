@@ -7,6 +7,7 @@ import { ZoneController } from './controllers/zone.controller';
 import { DeliveryController } from './controllers/delivery.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { entities } from './entities';
+import { JwtStrategy } from './strategy/jwt.strategy';
 
 
 @Module({
@@ -24,6 +25,6 @@ import { entities } from './entities';
     TypeOrmModule.forFeature(entities) // entidades por cada modulo
   ],
   controllers: [AppController, ZoneController, DeliveryController],
-  providers: [AppService, DeliveryService, ZoneService],
+  providers: [AppService, DeliveryService, ZoneService, JwtStrategy],
 })
 export class AppModule { }

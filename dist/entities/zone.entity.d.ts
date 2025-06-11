@@ -1,10 +1,9 @@
-import { BaseEntity } from 'typeorm';
 import { locationEntity } from './location.entity';
-import { deliveryEntity } from './location.entity';
-export declare class zoneEntity extends BaseEntity {
+import { deliveryEntity } from './delivery.entity';
+export declare class zoneEntity {
     idZone: number;
-    radius: number;
     name: string;
+    radius: number;
     location: locationEntity;
     deliveries: deliveryEntity[];
 }
