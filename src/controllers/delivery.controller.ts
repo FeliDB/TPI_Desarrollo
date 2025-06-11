@@ -1,6 +1,12 @@
-import { Body, Controller, Post, Get, Put, Param, Patch, Delete } from '@nestjs/common';
+import { Body, Controller, Post, Get, Put, Param, Patch, Delete
+ } from '@nestjs/common';
 import { stat } from 'fs';
 import { DeliveryService } from 'src/services/delivery.service';
+
+import { Reflector } from '@nestjs/core';
+
+export const Roles = Reflector.createDecorator<string[]>();
+
 
 
 @Controller("delivery")
@@ -9,6 +15,7 @@ export class DeliveryController {
     constructor(private deliveryService: DeliveryService){}
 
     @Post()
+    @Roles(['admin']) //Verificar
     postDelivery(@Body() body: any){
         return this.deliveryService.postDelivery(body);
     }
