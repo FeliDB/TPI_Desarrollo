@@ -12,9 +12,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeliveryController = void 0;
+exports.DeliveryController = exports.Roles = void 0;
 const common_1 = require("@nestjs/common");
 const delivery_service_1 = require("../services/delivery.service");
+const core_1 = require("@nestjs/core");
+exports.Roles = core_1.Reflector.createDecorator();
 let DeliveryController = class DeliveryController {
     deliveryService;
     constructor(deliveryService) {
@@ -51,6 +53,7 @@ let DeliveryController = class DeliveryController {
 exports.DeliveryController = DeliveryController;
 __decorate([
     (0, common_1.Post)(),
+    (0, exports.Roles)(['admin']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
