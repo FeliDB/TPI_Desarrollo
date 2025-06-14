@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Put, Param, Patch, Delete, UseGuards} from '@nestjs/common';
+import { Body, Controller, Post, Get, Put, Param, Patch, Delete, UseGuards, Headers} from '@nestjs/common';
 import { stat } from 'fs';
 import { DeliveryService } from 'src/services/delivery.service';
 
@@ -17,7 +17,7 @@ export class DeliveryController {
     constructor(private deliveryService: DeliveryService){}
 
     @Post()
-    @Roles(['admin']) //Verificar
+    @Roles(['admin']) 
     postDelivery(@Body() body: any){
         return this.deliveryService.postDelivery(body);
     }
@@ -38,12 +38,13 @@ export class DeliveryController {
         return this.deliveryService.findByProximity(body);
     }
 
+    @Roles(['admin']) 
     @Post(":id/assignZone")
     assignZone(@Param("id") id: number, @Body() body: any){
         return this.deliveryService.assignZone(id, body);
     }
+    
     @UseGuards(AuthGuard)
-
     @Get("findByZone")
     findByZone(@Body() body: any){
         return this.deliveryService.findByZone(body);

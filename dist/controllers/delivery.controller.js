@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DeliveryController = exports.Roles = void 0;
 const common_1 = require("@nestjs/common");
 const delivery_service_1 = require("../services/delivery.service");
+const auth_middleware_1 = require("../middlewares/auth.middleware");
 const core_1 = require("@nestjs/core");
 exports.Roles = core_1.Reflector.createDecorator();
 let DeliveryController = class DeliveryController {
@@ -76,6 +77,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], DeliveryController.prototype, "putDeliveryStatus", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_middleware_1.AuthGuard),
     (0, common_1.Get)("findByProximity"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -83,6 +85,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], DeliveryController.prototype, "findByProximity", null);
 __decorate([
+    (0, exports.Roles)(['admin']),
     (0, common_1.Post)(":id/assignZone"),
     __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
@@ -91,6 +94,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], DeliveryController.prototype, "assignZone", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_middleware_1.AuthGuard),
     (0, common_1.Get)("findByZone"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -98,6 +102,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], DeliveryController.prototype, "findByZone", null);
 __decorate([
+    (0, common_1.UseGuards)(auth_middleware_1.AuthGuard),
     (0, common_1.Get)(":id/zones"),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),

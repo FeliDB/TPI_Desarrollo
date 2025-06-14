@@ -3,30 +3,35 @@ import axios from 'axios';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor() {}
-
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers['authorization'];
+    const permissions = request.query['permissions'];
+    // console.log("permissions", permissions);
+    // console.log("authHeader", authHeader);
 
-    if (!authHeader) {
-      throw new UnauthorizedException('Token not provided');
+    if (!authHeader || !permissions) {
+      throw new UnauthorizedException('Token or permissions not provided');
     }
 
-    // Enviar token al otro backend
     try {
       const response = await axios.get('http://localhost:3000/can-do', {
         headers: {
-          Authorization: authHeader, // Reenviás exactamente lo que recibiste
+          Authorization: authHeader,
         },
+        params: {
+          permissions: permissions
+        }
       });
 
-      // Si querés, podés guardar info del usuario verificado en request.user
-      request.user = response.data; // Suponiendo que el backend te devuelve datos del usuario
+      request.user = response.data;
     } catch (error) {
+      console.error('Error al verificar permisos:', error?.response?.data || error.message);
       throw new UnauthorizedException('Token inválido o error externo');
     }
 
-    return true; // Permitir el acceso si todo fue bien
+
+
+    return true;
   }
 }
