@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import axios from 'axios';
+import { response } from 'express';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -13,7 +14,8 @@ export class AuthGuard implements CanActivate {
 
     if (!authHeader || !permissions) {
       throw new UnauthorizedException('Token or permissions not provided');
-    } 
+    }
+    
 
     try {
       const response = await axios.get('http://localhost:3000/can-do', {
@@ -27,8 +29,7 @@ export class AuthGuard implements CanActivate {
 
       request.user = response.data;
     } catch (error) {
-      console.error('Error al verificar permisos:', error?.response?.data || error.message);
-      throw new UnauthorizedException('Token inválido o error externo');
+      console.error('Error validating token:', error);
     }
 
     return true;

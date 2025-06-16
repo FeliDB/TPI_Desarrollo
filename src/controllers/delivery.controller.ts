@@ -1,9 +1,9 @@
 import { Body, Controller, Post, Get, Put, Param, Patch, Delete, UseGuards, Headers} from '@nestjs/common';
 import { stat } from 'fs';
-import { DeliveryService } from 'src/services/delivery.service';
+import { DeliveryService } from '../services/delivery.service';
 
 
-import { AuthGuard } from 'src/middlewares/auth.middleware';
+import { AuthGuard } from '../middlewares/auth.middleware';
 import { Reflector } from '@nestjs/core';
 import { Permissions } from 'src/middlewares/decorators/permissions.decorator';
 
