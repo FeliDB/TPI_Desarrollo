@@ -34,7 +34,7 @@ export class DeliveryController {
     
     @UseGuards(AuthGuard)
     @Get("findByProximity")
-    findByProximity(@Body() body: any){
+    findByProximity(@Body() body: any) {
         return this.deliveryService.findByProximity(body);
     }
 

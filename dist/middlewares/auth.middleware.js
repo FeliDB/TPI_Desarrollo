@@ -8,29 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthGuard = void 0;
 const common_1 = require("@nestjs/common");
-const axios_1 = require("axios");
 let AuthGuard = class AuthGuard {
     async canActivate(context) {
         const request = context.switchToHttp().getRequest();
         const authHeader = request.headers['authorization'];
-        const permissions = request.query['permissions'];
+        const permissions = request.headers['permissions'];
+        console.log("permissions", permissions);
+        console.log("authHeader", authHeader);
         if (!authHeader || !permissions) {
             throw new common_1.UnauthorizedException('Token or permissions not provided');
-        }
-        try {
-            const response = await axios_1.default.get('http://localhost:3000/can-do', {
-                headers: {
-                    Authorization: authHeader,
-                },
-                params: {
-                    permissions: permissions
-                }
-            });
-            request.user = response.data;
-        }
-        catch (error) {
-            console.error('Error al verificar permisos:', error?.response?.data || error.message);
-            throw new common_1.UnauthorizedException('Token inválido o error externo');
         }
         return true;
     }
