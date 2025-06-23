@@ -54,5 +54,10 @@ export class DeliveryController {
         return this.deliveryService.deleteDelivery(id);
     }
 
+    @Get()
+    getDelivery(){
+        return this.deliveryService.getDeliveries();
+    }
+
 }
 
