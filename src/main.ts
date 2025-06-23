@@ -4,12 +4,13 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors()
   await app.listen(process.env.PORT ?? 3000);
-  const corsOptions: CorsOptions = {
-    origin: '*', // Permitir solicitudes desde cualquier origen
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Métodos HTTP permitidos
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-  };
+  // const corsOptions: CorsOptions = {
+  //   origin: '*', // Permitir solicitudes desde cualquier origen
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Métodos HTTP permitidos
+  //   preflightContinue: false,
+  //   optionsSuccessStatus: 204,
+  // };
 }
 bootstrap();
