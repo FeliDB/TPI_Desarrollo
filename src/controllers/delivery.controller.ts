@@ -9,7 +9,6 @@ export class DeliveryController {
     constructor(private deliveryService: DeliveryService){}
 
     @Post()
-    
     postDelivery(@Body() body: any){
         return this.deliveryService.postDelivery(body);
     }
