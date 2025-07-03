@@ -187,4 +187,11 @@ export class DeliveryService {
             message: "Delivery deleted"
         };
     }
+    
+    async getDeliveries(){
+        return this.deliveryRepository.find({
+            relations: ['location', 'zones'],
+        });
+
+    }
 }
