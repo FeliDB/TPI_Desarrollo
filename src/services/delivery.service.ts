@@ -6,6 +6,8 @@ import { deliveryEntity } from '../entities/delivery.entity';
 import { locationEntity } from '../entities/location.entity';
 import { zoneEntity } from '../entities/zone.entity';
 
+
+
 @Injectable()
 export class DeliveryService {
 

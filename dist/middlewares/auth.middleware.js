@@ -29,7 +29,7 @@ let AuthGuard = class AuthGuard {
             request.user = response.data;
         }
         catch (error) {
-            throw error;
+            console.error('Error validating token:', error);
         }
         return true;
     }
