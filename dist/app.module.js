@@ -16,7 +16,14 @@ const zone_controller_1 = require("./controllers/zone.controller");
 const delivery_controller_1 = require("./controllers/delivery.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const entities_1 = require("./entities");
+const auth_middleware_1 = require("./middlewares/auth.middleware");
+const common_2 = require("@nestjs/common");
 let AppModule = class AppModule {
+    configure(consumer) {
+        consumer
+            .apply(auth_middleware_1.AuthMiddleware)
+            .forRoutes({ path: 'delivery/*', method: common_2.RequestMethod.ALL });
+    }
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([

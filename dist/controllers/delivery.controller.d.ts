@@ -16,4 +16,5 @@ export declare class DeliveryController {
     deleteDelivery(id: number): Promise<{
         message: string;
     }>;
+    getDelivery(): Promise<import("../entities/delivery.entity").deliveryEntity[]>;
 }

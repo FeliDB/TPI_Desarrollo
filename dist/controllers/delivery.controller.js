@@ -50,6 +50,9 @@ let DeliveryController = class DeliveryController {
     deleteDelivery(id) {
         return this.deliveryService.deleteDelivery(id);
     }
+    getDelivery() {
+        return this.deliveryService.getDeliveries();
+    }
 };
 exports.DeliveryController = DeliveryController;
 __decorate([
@@ -123,6 +126,12 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], DeliveryController.prototype, "deleteDelivery", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], DeliveryController.prototype, "getDelivery", null);
 exports.DeliveryController = DeliveryController = __decorate([
     (0, common_1.Controller)("delivery"),
     __metadata("design:paramtypes", [delivery_service_1.DeliveryService])
