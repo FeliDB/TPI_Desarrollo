@@ -54,7 +54,6 @@ let DeliveryController = class DeliveryController {
 exports.DeliveryController = DeliveryController;
 __decorate([
     (0, common_1.Post)(),
-    (0, exports.Roles)(['admin']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

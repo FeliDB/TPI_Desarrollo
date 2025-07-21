@@ -1,4 +1,4 @@
-import { DeliveryService } from 'src/services/delivery.service';
+import { DeliveryService } from '../services/delivery.service';
 export declare const Roles: import("@nestjs/core").ReflectableDecorator<string[], string[]>;
 export declare class DeliveryController {
     private deliveryService;
