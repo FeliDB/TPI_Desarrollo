@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 import { deliveryEntity } from '../entities/delivery.entity';
-import { locationEntity } from 'src/entities/location.entity';
-import { zoneEntity } from 'src/entities/zone.entity';
+import { locationEntity } from '../entities/location.entity';
+import { zoneEntity } from '../entities/zone.entity';
 export declare class DeliveryService {
     private deliveryRepository;
     private locationRepository;

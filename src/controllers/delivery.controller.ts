@@ -17,7 +17,7 @@ export class DeliveryController {
     constructor(private deliveryService: DeliveryService){}
 
     @Post()
-    @Roles(['admin']) 
+    // @Roles(['admin']) 
     postDelivery(@Body() body: any){
         return this.deliveryService.postDelivery(body);
     }

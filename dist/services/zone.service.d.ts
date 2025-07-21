@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { zoneEntity } from '../entities/zone.entity';
-import { locationEntity } from 'src/entities/location.entity';
+import { locationEntity } from '../entities/location.entity';
 export declare class ZoneService {
     private zoneRepository;
     private locationRepository;
