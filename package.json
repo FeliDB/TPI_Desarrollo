@@ -9,7 +9,11 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+<<<<<<< HEAD
     "start:dev": "ts-node-dev --respawn --transpile-only src/main.ts",
+=======
+    "start:dev": "nest start dev",
+>>>>>>> 78012b475187c1971991e658e364085fb77dbe74
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -20,6 +24,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",
@@ -29,9 +34,17 @@
     "axios": "^1.9.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+=======
+    "@nestjs/common": "^11.1.3",
+    "@nestjs/core": "^11.1.3",
+    "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/typeorm": "^11.0.0",
+    "axios": "^1.9.0",
+    "cors": "^2.8.5",
+>>>>>>> 78012b475187c1971991e658e364085fb77dbe74
     "pg": "^8.15.6",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1",
+    "rxjs": "^7.8.2",
     "typeorm": "^0.3.23"
   },
   "devDependencies": {
