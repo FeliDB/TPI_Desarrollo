@@ -17,7 +17,10 @@ export class DeliveryController {
     constructor(private deliveryService: DeliveryService){}
 
     @Post()
+<<<<<<< HEAD
     // @Roles(['admin']) 
+=======
+>>>>>>> 0eae2ffb01805bf54196f95a8269946a22b90825
     postDelivery(@Body() body: any){
         return this.deliveryService.postDelivery(body);
     }
@@ -64,6 +67,11 @@ export class DeliveryController {
     @Delete(":id")
     deleteDelivery(@Param("id") id: number){
         return this.deliveryService.deleteDelivery(id);
+    }
+
+    @Get()
+    getDelivery(){
+        return this.deliveryService.getDeliveries();
     }
 
 }
