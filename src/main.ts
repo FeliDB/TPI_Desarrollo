@@ -4,9 +4,8 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-<<<<<<< HEAD
   await app.listen(3001);
-=======
+
   app.enableCors()
   await app.listen(process.env.PORT ?? 3000);
   // const corsOptions: CorsOptions = {
@@ -15,6 +14,5 @@ async function bootstrap() {
   //   preflightContinue: false,
   //   optionsSuccessStatus: 204,
   // };
->>>>>>> 78012b475187c1971991e658e364085fb77dbe74
 }
 bootstrap();
