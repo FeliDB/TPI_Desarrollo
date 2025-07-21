@@ -6,7 +6,6 @@ import { zoneEntity } from '../entities/zone.entity';
 import { locationEntity } from '../entities/location.entity';
 import { Request } from '@nestjs/common'
 import { Response } from '@nestjs/common';
-import { last } from 'rxjs';
 
 
 @Injectable()
