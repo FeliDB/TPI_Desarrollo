@@ -20,4 +20,5 @@ export declare class DeliveryService {
     deleteDelivery(id: number): Promise<{
         message: string;
     }>;
+    getDeliveries(): Promise<deliveryEntity[]>;
 }

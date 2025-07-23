@@ -3,6 +3,7 @@ export declare const Roles: import("@nestjs/core").ReflectableDecorator<string[]
 export declare class DeliveryController {
     private deliveryService;
     constructor(deliveryService: DeliveryService);
+    getDelivery(): Promise<import("../entities/delivery.entity").deliveryEntity[]>;
     postDelivery(body: any): Promise<import("../entities/delivery.entity").deliveryEntity>;
     putDeliveryLocation(id: number, body: any): Promise<import("../entities/delivery.entity").deliveryEntity>;
     putDeliveryStatus(id: number, body: any): Promise<import("../entities/delivery.entity").deliveryEntity>;

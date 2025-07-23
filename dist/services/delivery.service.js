@@ -139,6 +139,11 @@ let DeliveryService = class DeliveryService {
             message: "Delivery deleted"
         };
     }
+    async getDeliveries() {
+        return this.deliveryRepository.find({
+            relations: ['location', 'zones'],
+        });
+    }
 };
 exports.DeliveryService = DeliveryService;
 exports.DeliveryService = DeliveryService = __decorate([
